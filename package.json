@@ -137,6 +137,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.6.0",
     "babel-plugin-import": "^1.12.2",
     "cross-env": "^6.0.3",
     "less": "^3.10.3",

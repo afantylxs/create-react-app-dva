@@ -8,9 +8,9 @@ import './Layout.less'
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu
 
-// @connect(({layout}) => ({
-//   data: layout
-// }))
+@connect(({layout}) => ({
+  data: layout
+}))
 
 class LayoutPage extends PureComponent {
 

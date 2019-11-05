@@ -398,6 +398,12 @@ module.exports = function(webpackEnv) {
                     },
                   ],
                   [
+                    require.resolve('@babel/plugin-proposal-decorators'),
+                    {
+                      legacy: true
+                    }
+                  ],
+                  [
                     "import",
                     {
                       "libraryName": "antd",
