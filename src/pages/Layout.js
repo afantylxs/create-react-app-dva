@@ -28,9 +28,6 @@ class LayoutPage extends PureComponent {
     }
   }
 
-  // TODO 菜单 和页面的权限控制  Authority组件
-
-
   componentDidMount() {
     const { dispatch } = this.props
     dispatch({
@@ -53,10 +50,10 @@ class LayoutPage extends PureComponent {
     this.setState({ collapsed: !this.state.collapsed })
   }
 
-  renderMenu = (routes) => {
+  renderMenu = (menus) => {
     const { collapsed } = this.state
-    const menus = routes.map(item => {
-      if (item.routes) {
+    const menuArr = menus.map(item => {
+      if (item.children) {
         return (
           <SubMenu
             key={item.path}
@@ -66,7 +63,7 @@ class LayoutPage extends PureComponent {
           >
             {/* 这里只显示最多2级菜单 所以不用递归 */}
             {
-              item.routes.map(item => (
+              item.children.map(item => (
                 <Menu.Item key={item.path}>{item.title}</Menu.Item>
               ))
             }
@@ -76,7 +73,7 @@ class LayoutPage extends PureComponent {
         return (<Menu.Item key={item.path}>{item.title}</Menu.Item>)
       }
     })
-    return menus
+    return menuArr
   }
 
   clickItem = (param) => {
@@ -93,6 +90,45 @@ class LayoutPage extends PureComponent {
     })
   }
 
+  getAuthorityRoutes = (routes) => {
+    const { permissions } = this.props.data
+    const ret = []
+    // console.log(routes)
+    if (!permissions.length){
+      return ret
+    }
+    routes.forEach(route => {
+      const { authority, routes } = route
+      // 无须配置权限，或者具有权限
+      if (!authority || permissions.includes(authority)) {
+        // 判断子路由        
+        if (routes) {
+          route.routes = this.getAuthorityRoutes(routes)
+        }
+        ret.push(route)
+      }
+    })
+    return ret
+  }
+
+  configMenu = (route) => {
+    const menus = []
+    route.forEach(item => {
+      if (!item.showMenu) return
+
+      var obj = {
+        title: item.title,
+        icon: item.icon,
+        path: item.path
+      }
+      if (item.routes) {
+        obj.children = this.configMenu(item.routes)
+      }
+      menus.push(obj)
+    })
+    return menus
+  }
+
   render() {
     const { route, location: {pathname} } = this.props
     const { collapsed, openKeys } = this.state
@@ -100,7 +136,9 @@ class LayoutPage extends PureComponent {
 
     // 菜单选中项 就是pathname
     const selectedKeys = pathname
-    // console.log(openKeys, selectedKeys)
+    const authRoutes = this.getAuthorityRoutes(route.routes)
+    const menus = this.configMenu(authRoutes)
+
     return (
       <Layout className="layout">
 
@@ -117,7 +155,7 @@ class LayoutPage extends PureComponent {
             onClick={this.clickItem}
             onOpenChange={this.OpenChange}
           >
-            { this.renderMenu(route.routes) }
+            { this.renderMenu(menus) }
           </Menu>
         </Sider>
 
@@ -133,7 +171,7 @@ class LayoutPage extends PureComponent {
 
           {/* 内容区域 */}
           <Content className="content">
-            { renderRoutes(route.routes) }
+            { renderRoutes(authRoutes) }
           </Content>
 
           {/* 底部区域 */}

@@ -5,7 +5,8 @@ export default {
   namespace: 'layout',
 
   state: {
-    name: 'layout'
+    name: 'layout',
+    permissions: []
   },
 
   subscriptions: {
@@ -18,7 +19,7 @@ export default {
       if (code === 200) {
         yield put({
           type: 'save',
-          payload: { list: data || [] }
+          payload: { permissions: data || [] }
         })
       } else {
         msg.error(message)
