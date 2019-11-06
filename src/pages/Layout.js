@@ -4,9 +4,14 @@ import { routerRedux } from 'dva/router'
 import { renderRoutes } from 'dva-router-config'
 import { Layout, Menu, Icon, Button } from 'antd'
 import './Layout.less'
+import logo from '../assets/avatar.png'
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu
+
+const getKeys = (pathname) => {
+  return [pathname.split('/').slice(0,3).join('/')]
+}
 
 @connect(({layout}) => ({
   data: layout
@@ -19,8 +24,19 @@ class LayoutPage extends PureComponent {
     const { location: { pathname } } = this.props
     this.state = {
       collapsed: false,
-      openKeys: [`/${pathname.split('/')[1]}`]
+      openKeys: getKeys(pathname)
     }
+  }
+
+  // TODO 菜单 和页面的权限控制  Authority组件
+
+
+  componentDidMount() {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'layout/getPermissionList',
+      payload: {}
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -28,7 +44,7 @@ class LayoutPage extends PureComponent {
 
     if (pathname != this.props.pathname) {
       this.setState({
-        openKeys: [`/${pathname.split('/')[1]}`]
+        openKeys: getKeys(pathname)
       })
     }
   }
@@ -84,13 +100,15 @@ class LayoutPage extends PureComponent {
 
     // 菜单选中项 就是pathname
     const selectedKeys = pathname
-    console.log(this.props)
+    // console.log(openKeys, selectedKeys)
     return (
       <Layout className="layout">
 
         {/* 侧边栏区域 */}
         <Sider className="sider" collapsed={collapsed}>
-          <div className="logo" />
+          <div className="logo">
+            <img src={logo} alt='logo' />
+          </div>
           <Menu
             theme="dark"
             mode="inline"

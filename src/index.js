@@ -7,7 +7,7 @@ import './index.css';
 const app = dva({
   history:createHistory()
 });
- 
+
 // 2. Plugins
 // app.use({});
  

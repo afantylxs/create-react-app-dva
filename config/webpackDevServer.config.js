@@ -6,9 +6,11 @@ const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMi
 const ignoredFiles = require('react-dev-utils/ignoredFiles');
 const paths = require('./paths');
 const fs = require('fs');
+const Mock = require('./mock');
 
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
+const isMock = process.env.MOCK_ENV || '';
 
 module.exports = function(proxy, allowedHost) {
   return {
@@ -83,7 +85,7 @@ module.exports = function(proxy, allowedHost) {
     public: allowedHost,
     proxy,
     before(app, server) {
-      if (fs.existsSync(paths.proxySetup)) {
+      if (fs.existsSync(paths.proxySetup) && isMock !== 'mock') {
         // This registers user provided middleware for proxy reasons
         require(paths.proxySetup)(app);
       }
@@ -99,6 +101,10 @@ module.exports = function(proxy, allowedHost) {
       // it used the same host and port.
       // https://github.com/facebook/create-react-app/issues/2272#issuecomment-302832432
       app.use(noopServiceWorkerMiddleware());
+      // 通过MOCK_ENV 判断是否开启本地mock
+      if (isMock === 'mock') {
+        Mock(app);
+      }
     },
   };
 };

@@ -8,7 +8,7 @@ export default class Commodity extends PureComponent {
       <div>
         <a>Commodity页面内容<Icon type="form"/></a>
         <br />
-        <Link to="/page/space/apartment">前往Apartment页面</Link>
+        <Link to="/page/apartment/list">前往Apartment页面</Link>
         <br />
         <Link to="/page/space/list">前往Space页面</Link>
       </div>
